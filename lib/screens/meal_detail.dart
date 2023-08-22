@@ -22,34 +22,51 @@ class MealDetailScreen extends ConsumerWidget {
         title: Text(meal.title),
         actions: [
           IconButton(
-              onPressed: () {
-                final bool isFavorite = ref
-                    .read(favoritesMealsProvider.notifier)
-                    .toggleMealFavoritesStatus(meal);
+            onPressed: () {
+              final bool isFavorite = ref
+                  .read(favoritesMealsProvider.notifier)
+                  .toggleMealFavoritesStatus(meal);
 
-                final String message = isFavorite
-                    ? 'This is Meal is a Favorite'
-                    : 'This Meal has been removed from Favorite';
+              final String message = isFavorite
+                  ? 'This is Meal is a Favorite'
+                  : 'This Meal has been removed from Favorite';
 
-                ScaffoldMessenger.of(context).clearSnackBars();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(message),
-                  ),
-                );
-              },
-              icon: Icon(isFavorite ? Icons.star : Icons.star_border))
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(message),
+                ),
+              );
+            },
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) => RotationTransition(
+                turns: Tween<double>(
+                  begin: 0.8,
+                  end: 1,
+                ).animate(animation),
+                child: child,
+              ),
+              child: Icon(
+                isFavorite ? Icons.star : Icons.star_border,
+                key: ValueKey(isFavorite),
+              ),
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            FadeInImage(
-              placeholder: MemoryImage(kTransparentImage),
-              image: NetworkImage(meal.imageUrl),
-              fit: BoxFit.cover,
-              height: 300,
-              width: double.infinity,
+            Hero(
+              tag: meal.id,
+              child: FadeInImage(
+                placeholder: MemoryImage(kTransparentImage),
+                image: NetworkImage(meal.imageUrl),
+                fit: BoxFit.cover,
+                height: 300,
+                width: double.infinity,
+              ),
             ),
             const SizedBox(height: 14),
             Text(
